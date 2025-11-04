@@ -121,6 +121,8 @@ public class PersonelForm extends JDialog {
             saved = false;
             setVisible(false);
         });
+
+
     }
 
     public boolean isSaved() {

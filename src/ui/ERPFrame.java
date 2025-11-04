@@ -1,12 +1,17 @@
+// language: java
 package ui;
 
 import dao.PersonelDAO;
 import model.Personel;
+import model.SalaryRecord;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ERPFrame extends JFrame {
     private final PersonelDAO dao = new PersonelDAO();
@@ -31,7 +36,7 @@ public class ERPFrame extends JFrame {
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Tabloda düzenleme yapılmasın
+                return false;
             }
         };
         table = new JTable(tableModel);
@@ -39,7 +44,6 @@ public class ERPFrame extends JFrame {
         table.setRowHeight(25);
         table.getTableHeader().setReorderingAllowed(false);
 
-        // Sütun genişlikleri
         table.getColumnModel().getColumn(0).setPreferredWidth(50);
         table.getColumnModel().getColumn(1).setPreferredWidth(120);
         table.getColumnModel().getColumn(2).setPreferredWidth(120);
@@ -51,21 +55,27 @@ public class ERPFrame extends JFrame {
         scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
         add(scrollPane, BorderLayout.CENTER);
 
-        // Butonlar
+        // Buton paneli
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
-
-// CRUD İŞLEMLERİ
         JButton btnYenile = new JButton("🔄 Yenile");
         JButton btnEkle = new JButton("➕ Yeni Personel");
         JButton btnDuzenle = new JButton("✏️ Düzenle");
         JButton btnSil = new JButton("🗑️ Sil");
+        JButton btnMaasToplam = new JButton("💰 Maaş Toplamı");
+        JButton btnOzetGrafik = new JButton("📊 Özet & Grafik");
+        JButton btnExport = new JButton("📤 CSV Dışa Aktar"); // ✅ Yeni buton eklendi
 
-        // Buton stilleri
+        btnMaasToplam.setPreferredSize(new Dimension(150, 35));
+        btnMaasToplam.setBackground(new Color(155, 89, 182));
+        btnMaasToplam.setForeground(Color.WHITE);
+
         btnYenile.setPreferredSize(new Dimension(120, 35));
         btnEkle.setPreferredSize(new Dimension(150, 35));
         btnDuzenle.setPreferredSize(new Dimension(120, 35));
         btnSil.setPreferredSize(new Dimension(100, 35));
+        btnOzetGrafik.setPreferredSize(new Dimension(150, 35));
+        btnExport.setPreferredSize(new Dimension(150, 35));
 
         btnEkle.setBackground(new Color(24, 158, 89));
         btnEkle.setForeground(Color.WHITE);
@@ -73,11 +83,19 @@ public class ERPFrame extends JFrame {
         btnDuzenle.setForeground(Color.WHITE);
         btnSil.setBackground(new Color(231, 76, 60));
         btnSil.setForeground(Color.WHITE);
+        btnOzetGrafik.setBackground(new Color(52, 152, 219));
+        btnOzetGrafik.setForeground(Color.WHITE);
+        btnExport.setBackground(new Color(44, 62, 80)); // ✅ Stil eklendi
+        btnExport.setForeground(Color.WHITE);
 
+        // Butonları ekleme
         buttonPanel.add(btnYenile);
         buttonPanel.add(btnEkle);
         buttonPanel.add(btnDuzenle);
         buttonPanel.add(btnSil);
+        buttonPanel.add(btnOzetGrafik);
+        buttonPanel.add(btnMaasToplam);
+        buttonPanel.add(btnExport); // ✅ Yeni buton panele eklendi
 
         add(buttonPanel, BorderLayout.SOUTH);
 
@@ -86,14 +104,91 @@ public class ERPFrame extends JFrame {
         btnEkle.addActionListener(e -> ekle());
         btnDuzenle.addActionListener(e -> duzenle());
         btnSil.addActionListener(e -> sil());
+        btnMaasToplam.addActionListener(e -> maasToplamHesapla());
 
-        // İlk yüklemede verileri getir
+        // 📤 CSV dışa aktar buton olayı
+        btnExport.addActionListener(e -> {
+            java.util.List<model.SalaryRecord> records;
+            try {
+                records = buildSalaryRecords();
+            } catch (Exception ex) {
+                records = null;
+            }
+
+            java.awt.Component parent = (java.awt.Component) this; // açık cast
+
+            if (records == null || records.isEmpty()) {
+                export.ReportExporter.exportTableToCSV(parent, table);
+            } else {
+                export.ReportExporter.exportSalaryRecordsToCSV(parent, records);
+            }
+        });
+
+
+        // 📊 Özet & Grafik buton olayı
+        btnOzetGrafik.addActionListener(e -> {
+            List<SalaryRecord> salaryRecords;
+            try {
+                salaryRecords = buildSalaryRecords();
+                if (salaryRecords == null || salaryRecords.isEmpty()) {
+                    salaryRecords = ERPFrameExtensions.exampleData();
+                }
+            } catch (Exception ex) {
+                salaryRecords = ERPFrameExtensions.exampleData();
+            }
+
+            JFrame reportFrame = new JFrame("Raporlar ve Grafik");
+            reportFrame.setSize(900, 700);
+            reportFrame.setLocationRelativeTo(this);
+            reportFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+            ERPFrameExtensions.attachPanels(reportFrame, salaryRecords);
+            reportFrame.setVisible(true);
+        });
+
+        // İlk yükleme
         loadData();
     }
 
-    private void loadData() {
-        tableModel.setRowCount(0); // Tabloyu temizle
+    private List<SalaryRecord> buildSalaryRecords() {
+        return dao.getAll().stream().map(p -> {
+            double gross = p.getMaas() != null ? p.getMaas().doubleValue() : 0.0;
+            LocalDate date = p.getGirisTarihi() != null ? p.getGirisTarihi() : LocalDate.now();
+            return new SalaryRecord(
+                    String.valueOf(p.getId()),
+                    (p.getAd() != null ? p.getAd() : "") + " " + (p.getSoyad() != null ? p.getSoyad() : ""),
+                    p.getPozisyon() != null ? p.getPozisyon() : "Bilinmiyor",
+                    gross,
+                    0.0,
+                    0.0,
+                    gross,
+                    date
+            );
+        }).collect(Collectors.toList());
+    }
 
+    private void maasToplamHesapla() {
+        double toplam = 0.0;
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            String maasStr = (String) tableModel.getValueAt(i, 4);
+            if (maasStr != null && !maasStr.isEmpty()) {
+                maasStr = maasStr.replace("₺", "").trim().replace(",", ".");
+                try {
+                    toplam += Double.parseDouble(maasStr);
+                } catch (NumberFormatException ex) {
+                    System.err.println("Maaş okunamadı: " + maasStr);
+                }
+            }
+        }
+
+        JOptionPane.showMessageDialog(this,
+                String.format("Toplam Maaş: %.2f ₺", toplam),
+                "Maaş Toplamı",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void loadData() {
+        tableModel.setRowCount(0);
         dao.getAll().forEach(p -> {
             Object[] row = {
                     p.getId(),
@@ -105,7 +200,6 @@ public class ERPFrame extends JFrame {
             };
             tableModel.addRow(row);
         });
-
         System.out.println("✓ Personel listesi yüklendi. Toplam: " + tableModel.getRowCount());
     }
 
@@ -209,12 +303,8 @@ public class ERPFrame extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
-                // Sistem Look and Feel
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
+            } catch (Exception ignored) {}
             ERPFrame frame = new ERPFrame();
             frame.setVisible(true);
         });

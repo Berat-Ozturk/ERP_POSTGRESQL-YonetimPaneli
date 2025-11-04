@@ -12,6 +12,8 @@ public class PersonelPanel extends JPanel {
     private final PersonelService service = new PersonelService();
     private final JTable table;
 
+
+
     public PersonelPanel() {
         setLayout(new BorderLayout());
         table = new JTable();
@@ -31,4 +33,5 @@ public class PersonelPanel extends JPanel {
         }
         table.setModel(model);
     }
+
 }

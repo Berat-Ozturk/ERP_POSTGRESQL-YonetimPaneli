@@ -6,12 +6,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-
     private static final String HOST = ConfigReader.get("db.host", "localhost");
     private static final String PORT = ConfigReader.get("db.port", "5432");
-    private static final String DATABASE = ConfigReader.get("db.name", "ERPD");
+    private static final String DATABASE = ConfigReader.get("db.name", "ERPDB");
     private static final String USERNAME = ConfigReader.get("db.username", "postgres");
-    private static final String PASSWORD = ConfigReader.get("db.password", "password");
+    private static final String PASSWORD = ConfigReader.get("db.password", "postgres123");
 
     private static final String URL = "jdbc:postgresql://" + HOST + ":" + PORT + "/" + DATABASE
             + "?loginTimeout=" + ConfigReader.getInt("db.pool.timeout", 10);
