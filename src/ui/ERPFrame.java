@@ -1,4 +1,3 @@
-// language: java
 package ui;
 
 import dao.PersonelDAO;
@@ -25,13 +24,11 @@ public class ERPFrame extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
-        // Başlık
         JLabel lblTitle = new JLabel("PERSONEL YÖNETİM SİSTEMİ", SwingConstants.CENTER);
         lblTitle.setFont(new Font("Arial", Font.BOLD, 20));
         lblTitle.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         add(lblTitle, BorderLayout.NORTH);
 
-        // Tablo
         String[] columns = {"ID", "Ad", "Soyad", "Pozisyon", "Maaş", "Giriş Tarihi"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
@@ -55,7 +52,6 @@ public class ERPFrame extends JFrame {
         scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
         add(scrollPane, BorderLayout.CENTER);
 
-        // Buton paneli
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
         JButton btnYenile = new JButton("🔄 Yenile");
@@ -64,7 +60,7 @@ public class ERPFrame extends JFrame {
         JButton btnSil = new JButton("🗑️ Sil");
         JButton btnMaasToplam = new JButton("💰 Maaş Toplamı");
         JButton btnOzetGrafik = new JButton("📊 Özet & Grafik");
-        JButton btnExport = new JButton("📤 CSV Dışa Aktar"); // ✅ Yeni buton eklendi
+        JButton btnExport = new JButton("📤 CSV Dışa Aktar");
 
         btnMaasToplam.setPreferredSize(new Dimension(150, 35));
         btnMaasToplam.setBackground(new Color(155, 89, 182));
@@ -85,28 +81,25 @@ public class ERPFrame extends JFrame {
         btnSil.setForeground(Color.WHITE);
         btnOzetGrafik.setBackground(new Color(52, 152, 219));
         btnOzetGrafik.setForeground(Color.WHITE);
-        btnExport.setBackground(new Color(44, 62, 80)); // ✅ Stil eklendi
+        btnExport.setBackground(new Color(44, 62, 80));
         btnExport.setForeground(Color.WHITE);
 
-        // Butonları ekleme
         buttonPanel.add(btnYenile);
         buttonPanel.add(btnEkle);
         buttonPanel.add(btnDuzenle);
         buttonPanel.add(btnSil);
         buttonPanel.add(btnOzetGrafik);
         buttonPanel.add(btnMaasToplam);
-        buttonPanel.add(btnExport); // ✅ Yeni buton panele eklendi
+        buttonPanel.add(btnExport);
 
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Buton olayları
         btnYenile.addActionListener(e -> loadData());
         btnEkle.addActionListener(e -> ekle());
         btnDuzenle.addActionListener(e -> duzenle());
         btnSil.addActionListener(e -> sil());
         btnMaasToplam.addActionListener(e -> maasToplamHesapla());
 
-        // 📤 CSV dışa aktar buton olayı
         btnExport.addActionListener(e -> {
             java.util.List<model.SalaryRecord> records;
             try {
@@ -115,7 +108,7 @@ public class ERPFrame extends JFrame {
                 records = null;
             }
 
-            java.awt.Component parent = (java.awt.Component) this; // açık cast
+            java.awt.Component parent = (java.awt.Component) this;
 
             if (records == null || records.isEmpty()) {
                 export.ReportExporter.exportTableToCSV(parent, table);
@@ -125,7 +118,6 @@ public class ERPFrame extends JFrame {
         });
 
 
-        // 📊 Özet & Grafik buton olayı
         btnOzetGrafik.addActionListener(e -> {
             List<SalaryRecord> salaryRecords;
             try {
@@ -146,7 +138,6 @@ public class ERPFrame extends JFrame {
             reportFrame.setVisible(true);
         });
 
-        // İlk yükleme
         loadData();
     }
 

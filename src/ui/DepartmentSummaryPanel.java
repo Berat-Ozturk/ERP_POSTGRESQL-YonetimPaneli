@@ -1,4 +1,3 @@
-// language: java
 package ui;
 
 import model.SalaryRecord;

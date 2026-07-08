@@ -18,7 +18,6 @@ public class ReportExporter {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
 
-    // --- 1. SalaryRecord listesini CSV olarak dışa aktarır ---
     public static void exportSalariesCsv(File file, List<SalaryRecord> records) throws IOException {
         if (file == null) throw new IllegalArgumentException("file is null");
         try (BufferedWriter w = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)) {
@@ -39,7 +38,6 @@ public class ReportExporter {
         }
     }
 
-    // --- 2. Departman özetlerini dışa aktarır (şimdilik opsiyonel) ---
     public static void exportDepartmentCsv(File file, List<DepartmentSummary> summaries) throws IOException {
         if (file == null) throw new IllegalArgumentException("file is null");
         try (BufferedWriter w = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)) {
@@ -56,7 +54,6 @@ public class ReportExporter {
         }
     }
 
-    // --- 3. JTable'daki verileri CSV olarak dışa aktarır ---
     public static void exportTableToCSV(java.awt.Component parent, JTable table) {
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("CSV olarak kaydet");
@@ -68,14 +65,12 @@ public class ReportExporter {
                 TableModel model = table.getModel();
                 int colCount = model.getColumnCount();
 
-                // Başlık
                 for (int i = 0; i < colCount; i++) {
                     writer.write(csvField(model.getColumnName(i)));
                     if (i < colCount - 1) writer.write(",");
                 }
                 writer.newLine();
 
-                // Satırlar
                 for (int r = 0; r < model.getRowCount(); r++) {
                     for (int c = 0; c < colCount; c++) {
                         Object value = model.getValueAt(r, c);
@@ -93,7 +88,6 @@ public class ReportExporter {
         }
     }
 
-    // --- 4. SalaryRecord listesini CSV olarak dışa aktarır (GUI destekli) ---
     public static void exportSalaryRecordsToCSV(java.awt.Component parent, List<SalaryRecord> records) {
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Maaş kayıtlarını CSV olarak kaydet");
@@ -112,7 +106,6 @@ public class ReportExporter {
         }
     }
 
-    // --- Yardımcı fonksiyonlar ---
     private static String csvField(Object v) {
         if (v == null) return "\"\"";
         String s = String.valueOf(v);

@@ -24,7 +24,6 @@ public class PersonelForm extends JDialog {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
-        // Form paneli
         JPanel formPanel = new JPanel(new GridLayout(5, 2, 10, 10));
         formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
 
@@ -41,7 +40,6 @@ public class PersonelForm extends JDialog {
 
         add(formPanel, BorderLayout.CENTER);
 
-        // Buton paneli
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
 
@@ -61,7 +59,6 @@ public class PersonelForm extends JDialog {
 
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Mevcut personel varsa alanları doldur
         if (p != null) {
             this.personel = p;
             txtAd.setText(p.getAd());
@@ -70,11 +67,9 @@ public class PersonelForm extends JDialog {
             txtMaas.setText(p.getMaas() == null ? "" : p.getMaas().toString());
             txtGiris.setText(p.getGirisTarihi() == null ? "" : p.getGirisTarihi().toString());
         } else {
-            // Yeni personel için bugünün tarihini varsayılan yap
             txtGiris.setText(LocalDate.now().toString());
         }
 
-        // Kaydet butonu
         btnSave.addActionListener(e -> {
             if (txtAd.getText().isBlank() || txtSoyad.getText().isBlank()) {
                 JOptionPane.showMessageDialog(this,
@@ -116,7 +111,6 @@ public class PersonelForm extends JDialog {
             setVisible(false);
         });
 
-        // İptal butonu
         btnCancel.addActionListener(e -> {
             saved = false;
             setVisible(false);

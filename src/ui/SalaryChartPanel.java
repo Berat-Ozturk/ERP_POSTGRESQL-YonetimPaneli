@@ -1,4 +1,3 @@
-// language: java
 package ui;
 
 import model.SalaryRecord;
@@ -40,14 +39,12 @@ public class SalaryChartPanel extends JPanel {
         double max = monthly.values().stream().mapToDouble(d -> d).max().orElse(1);
         double min = 0;
 
-        // axes
         g.setColor(Color.WHITE);
         g.fillRect(0,0,w,h);
         g.setColor(Color.BLACK);
-        g.drawLine(left, top, left, top+gh); // y
-        g.drawLine(left, top+gh, left+gw, top+gh); // x
+        g.drawLine(left, top, left, top+gh);
+        g.drawLine(left, top+gh, left+gw, top+gh);
 
-        // y ticks
         for (int i=0;i<=5;i++) {
             int y = top + gh - (int)((gh * i) / 5.0);
             double val = min + (max - min) * i / 5.0;
@@ -55,7 +52,6 @@ public class SalaryChartPanel extends JPanel {
             g.drawString(String.format("%.0f", val), 5, y+4);
         }
 
-        // points
         int n = monthly.size();
         int idx = 0;
         int prevX=0, prevY=0;

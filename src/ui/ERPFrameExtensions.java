@@ -1,4 +1,3 @@
-// language: java
 package ui;
 
 import model.SalaryRecord;
@@ -68,7 +67,6 @@ public class ERPFrameExtensions {
         frame.repaint();
     }
 
-    // Örnek veri (test için)
     public static List<SalaryRecord> exampleData() {
         return List.of(
                 new SalaryRecord("1","Ali","Muhasebe",10000,2000,500,7500, LocalDate.of(2025,1,10)),

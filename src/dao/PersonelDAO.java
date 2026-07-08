@@ -11,7 +11,7 @@ public class PersonelDAO {
 
     public List<Personel> getAll() {
         List<Personel> list = new ArrayList<>();
-        String sql = "SELECT * FROM personel"; // PostgreSQL'de tablo isimleri genelde küçük harfle yazılır
+        String sql = "SELECT * FROM personel";
 
         try (Connection conn = DBConnection.getConnection();
              Statement st = conn.createStatement();

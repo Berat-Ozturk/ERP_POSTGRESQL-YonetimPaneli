@@ -11,14 +11,12 @@ public class ConfigReader {
 
     static {
         try {
-            // Önce classpath'den yüklemeyi dene
             InputStream inputStream = ConfigReader.class.getClassLoader().getResourceAsStream(CONFIG_FILE);
 
             if (inputStream != null) {
                 props.load(inputStream);
                 System.out.println("✓ Config dosyası yüklendi: " + CONFIG_FILE);
             } else {
-                // Classpath'de bulunamazsa dosya sisteminden yüklemeyi dene
                 try (FileInputStream fis = new FileInputStream(CONFIG_FILE)) {
                     props.load(fis);
                     System.out.println("✓ Config dosyası yüklendi: " + CONFIG_FILE);
@@ -31,11 +29,6 @@ public class ConfigReader {
         }
     }
 
-    /**
-     * Config dosyasından değer okur
-     * @param key Anahtar
-     * @return Değer, bulunamazsa null
-     */
     public static String get(String key) {
         String value = props.getProperty(key);
         if (value == null) {
@@ -44,22 +37,10 @@ public class ConfigReader {
         return value;
     }
 
-    /**
-     * Config dosyasından değer okur, bulunamazsa varsayılan değer döner
-     * @param key Anahtar
-     * @param defaultValue Varsayılan değer
-     * @return Değer veya varsayılan değer
-     */
     public static String get(String key, String defaultValue) {
         return props.getProperty(key, defaultValue);
     }
 
-    /**
-     * Integer değer okur
-     * @param key Anahtar
-     * @param defaultValue Varsayılan değer
-     * @return Integer değer
-     */
     public static int getInt(String key, int defaultValue) {
         String value = props.getProperty(key);
         if (value != null) {
@@ -72,12 +53,6 @@ public class ConfigReader {
         return defaultValue;
     }
 
-    /**
-     * Boolean değer okur
-     * @param key Anahtar
-     * @param defaultValue Varsayılan değer
-     * @return Boolean değer
-     */
     public static boolean getBoolean(String key, boolean defaultValue) {
         String value = props.getProperty(key);
         if (value != null) {
@@ -86,13 +61,9 @@ public class ConfigReader {
         return defaultValue;
     }
 
-    /**
-     * Tüm config'i göster (debug amaçlı)
-     */
     public static void printAll() {
         System.out.println("=== Config Değerleri ===");
         props.forEach((key, value) -> {
-            // Şifre gibi hassas bilgileri maskeleme
             if (key.toString().toLowerCase().contains("password")) {
                 System.out.println(key + " = ****");
             } else {
